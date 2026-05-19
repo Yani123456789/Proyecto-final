@@ -1,15 +1,13 @@
 #include <stdio.h>
-
+#include <stdlib.h> 
 #define MAX_OYENTES 100
 #define NUM_CANCIONES 10
 
-// Prototipos de las funciones
 int registrarVotos(int votos[MAX_OYENTES][3]);
 void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera, int *segunda);
 void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int segunda);
 
 int main() {
-    // Matriz para almacenar los 3 votos de cada oyente (máximo 100 oyentes)
     int votos[MAX_OYENTES][3];
     int numOyentes = 0;
     int primeraMasVotada = -1, segundaMasVotada = -1;
@@ -31,50 +29,55 @@ int main() {
     return 0;
 }
 
-// ==========================================
-// INCISO 1: Leer y almacenar los votos
-// ==========================================
 int registrarVotos(int votos[MAX_OYENTES][3]) {
     int i = 0;
+    char linea[100]; 
     int v1, v2, v3;
 
     while (i < MAX_OYENTES) {
         printf("Oyente %d: ", i);
-        scanf("%d %d %d", &v1, &v2, &v3);
-
-        // Si el primer dato es -1, detenemos la lectura
-        if (v1 == -1) {
+        
+        if (fgets(linea, sizeof(linea), stdin) == NULL) {
             break;
         }
 
-        // Almacenamos los votos en la matriz
+       
+        int extraidos = sscanf(linea, "%d %d %d", &v1, &v2, &v3);
+
+        
+        if (extraidos >= 1 && v1 == -1) {
+            break;
+        }
+
+       
+        if (extraidos < 3) {
+            printf("Error: Debes introducir 3 numeros de canciones o -1 para terminar. Intenta de nuevo.\n");
+            continue; 
+        }
+
+        
         votos[i][0] = v1;
         votos[i][1] = v2;
         votos[i][2] = v3;
         i++;
     }
-    return i; // Devuelve la cantidad total de oyentes que participaron
+    return i; 
 }
 
-// ==========================================
-// INCISO 2: Calcular votos por canción y top 2
-// ==========================================
-void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera, int *segunda) {
-    int puntajesCanciones[NUM_CANCIONES] = {0}; // Inicializa el conteo de las 10 canciones en 0
 
-    // Acumular los puntos por cada canción
+void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera, int *segunda) {
+    int puntajesCanciones[NUM_CANCIONES] = {0}; 
+
     for (int i = 0; i < numOyentes; i++) {
-        puntajesCanciones[votos[i][0]] += 3; // 1er lugar = 3 pts
-        puntajesCanciones[votos[i][1]] += 2; // 2do lugar = 2 pts
-        puntajesCanciones[votos[i][2]] += 1; // 3er lugar = 1 pt
+        puntajesCanciones[votos[i][0]] += 3; 
+        puntajesCanciones[votos[i][1]] += 2; 
+        puntajesCanciones[votos[i][2]] += 1; 
     }
 
-    // Mostrar los votos obtenidos por cada canción
     for (int c = 0; c < NUM_CANCIONES; c++) {
         printf("Cancion %d: %d votos\n", c, puntajesCanciones[c]);
     }
 
-    // Encontrar la 1ra y 2da canción más votada
     int max1 = -1, max2 = -1;
     *primera = -1;
     *segunda = -1;
@@ -96,9 +99,7 @@ void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera,
     printf("2a cancion: %d\n", *segunda);
 }
 
-// ==========================================
-// INCISO 3: Repartir puntos a oyentes y buscar ganador
-// ==========================================
+
 void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int segunda) {
     int maxPuntosOyente = -1;
     int oyenteGanador = -1;
@@ -108,7 +109,6 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
         int acertoPrimera = 0;
         int acertoSegunda = 0;
 
-        // Revisar las 3 canciones que votó el oyente actual
         for (int j = 0; j < 3; j++) {
             if (votos[i][j] == primera) {
                 acertoPrimera = 1;
@@ -118,7 +118,6 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
             }
         }
 
-        // Aplicar reglas de puntuación
         if (acertoPrimera) {
             puntosEsteOyente += 30;
         }
@@ -126,12 +125,11 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
             puntosEsteOyente += 20;
         }
         if (acertoPrimera && acertoSegunda) {
-            puntosEsteOyente += 10; // Bono de 10 puntos suplementarios
+            puntosEsteOyente += 10; 
         }
 
         printf("Oyente %d: %d puntos\n", i, puntosEsteOyente);
 
-        // Validar si es el oyente con más puntos hasta ahora
         if (puntosEsteOyente > maxPuntosOyente) {
             maxPuntosOyente = puntosEsteOyente;
             oyenteGanador = i;
