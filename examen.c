@@ -1,14 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h> 
+
 #define MAX_OYENTES 100
 #define NUM_CANCIONES 10
+
 
 int registrarVotos(int votos[MAX_OYENTES][3]);
 void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera, int *segunda);
 void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int segunda);
 
 int main() {
-    int votos[MAX_OYENTES][3];
+    
     int numOyentes = 0;
     int primeraMasVotada = -1, segundaMasVotada = -1;
 
@@ -29,32 +30,22 @@ int main() {
     return 0;
 }
 
+
 int registrarVotos(int votos[MAX_OYENTES][3]) {
     int i = 0;
-    char linea[100]; 
     int v1, v2, v3;
 
     while (i < MAX_OYENTES) {
         printf("Oyente %d: ", i);
+        scanf("%d %d %d", &v1, &v2, &v3);
+
         
-        if (fgets(linea, sizeof(linea), stdin) == NULL) {
+        if (v1 == -1) 
+        {
             break;
         }
 
-       
-        int extraidos = sscanf(linea, "%d %d %d", &v1, &v2, &v3);
-
         
-        if (extraidos >= 1 && v1 == -1) {
-            break;
-        }
-
-       
-        if (extraidos < 3) {
-            printf("Error: Debes introducir 3 numeros de canciones o -1 para terminar. Intenta de nuevo.\n");
-            continue; 
-        }
-
         
         votos[i][0] = v1;
         votos[i][1] = v2;
@@ -64,10 +55,10 @@ int registrarVotos(int votos[MAX_OYENTES][3]) {
     return i; 
 }
 
-
 void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera, int *segunda) {
     int puntajesCanciones[NUM_CANCIONES] = {0}; 
 
+    
     for (int i = 0; i < numOyentes; i++) {
         puntajesCanciones[votos[i][0]] += 3; 
         puntajesCanciones[votos[i][1]] += 2; 
@@ -78,6 +69,7 @@ void calcularResultados(int votos[MAX_OYENTES][3], int numOyentes, int *primera,
         printf("Cancion %d: %d votos\n", c, puntajesCanciones[c]);
     }
 
+    
     int max1 = -1, max2 = -1;
     *primera = -1;
     *segunda = -1;
@@ -109,6 +101,7 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
         int acertoPrimera = 0;
         int acertoSegunda = 0;
 
+       
         for (int j = 0; j < 3; j++) {
             if (votos[i][j] == primera) {
                 acertoPrimera = 1;
@@ -118,6 +111,7 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
             }
         }
 
+    
         if (acertoPrimera) {
             puntosEsteOyente += 30;
         }
@@ -130,6 +124,7 @@ void repartirPremios(int votos[MAX_OYENTES][3], int numOyentes, int primera, int
 
         printf("Oyente %d: %d puntos\n", i, puntosEsteOyente);
 
+        
         if (puntosEsteOyente > maxPuntosOyente) {
             maxPuntosOyente = puntosEsteOyente;
             oyenteGanador = i;
